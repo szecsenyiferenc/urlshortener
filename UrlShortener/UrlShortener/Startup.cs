@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UrlShortener.DependencyInjection;
 using UrlShortener.Formatters;
 
 namespace UrlShortener
@@ -33,6 +34,7 @@ namespace UrlShortener
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            services.AddDependencies();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

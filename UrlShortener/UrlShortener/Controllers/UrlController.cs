@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using UrlShortener.Repository;
+using UrlShortener.Validators;
 
 namespace UrlShortener.Controllers
 {
@@ -10,20 +12,44 @@ namespace UrlShortener.Controllers
     [ApiController]
     public class UrlController : ControllerBase
     {
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(string id)
+        private readonly IUrlRepository _urlRepository;
+        private readonly IUrlValidator _urlValidator;
+
+        public UrlController(IUrlRepository urlRepository, IUrlValidator urlValidator)
         {
-            if(id == null)
+            _urlRepository = urlRepository;
+            _urlValidator = urlValidator;
+        }
+
+        [HttpGet("{id}", Name = "GetUrl")]
+        public ActionResult<string> Get(string guid)
+        {
+            if(guid == null)
             {
                 return NotFound();
             }
-            return Ok("https://www.google.com/");
+
+            var url = _urlRepository.GetUrl(guid);
+
+            if(url == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(url);
         }
 
         [HttpPost]
-        public ActionResult<string> Post([FromBody] string value)
+        public ActionResult<string> Post([FromBody] string url)
         {
-            return Ok(value);
+            if (!_urlValidator.Validate(url))
+            {
+                return BadRequest("The given url is invalid.");
+            }
+
+            var createdKey = _urlRepository.AddUrl(url);
+
+            return CreatedAtRoute("GetUrl", createdKey, createdKey);
         }
     }
 }
