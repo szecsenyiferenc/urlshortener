@@ -1,0 +1,10 @@
+<form class="app-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="app-form-group form-group">
+    <input formControlName="currentUrl" class="form-control app-form-input" type="url" placeholder="Shorten your link" id="currentUrl" [class.replaced]="isReplaced" required>
+    <button class="btn btn-primary app-form-button" type="submit" [disabled]="currentUrl.invalid" *ngIf="!isReplaced">Shorten</button>
+    <button class="btn btn-primary app-form-button" type="button" *ngIf="isReplaced" (click)="copy()">Copy</button>
+  </div>
+  <div *ngIf="currentUrl.touched && currentUrl.invalid" class="alert alert-danger app-alert">The given url is not valid.</div>
+</form>
+
+

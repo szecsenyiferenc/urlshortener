@@ -1,0 +1,34 @@
+.app-form{
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+
+.app-form-group{
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.app-form-input{
+  margin: 4px;
+  min-width: 600px;
+}
+
+.app-form-button{
+  margin: 4px;
+}
+
+.app-alert{
+  font-size: 14px;
+  margin: 4px;
+}
+
+.replaced {
+  color: #007bff;
+}
+
+@media only screen and (max-width: 750px) {
+  .app-form-input{
+      min-width: initial;
+}
+}
