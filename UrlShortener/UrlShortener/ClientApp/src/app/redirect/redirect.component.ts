@@ -13,12 +13,12 @@ export class RedirectComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router, private backendService: BackendService) { }
 
   ngOnInit() {
-    // this.route.paramMap.pipe(
-    //   switchMap(param => this.backendService.getUrl(param.get('id'))),
-    //   tap(url => window.location.href = url),
-    //   catchError(() => this.router.navigateByUrl('/notfound'))
-    // )
-    // .subscribe();
+    this.route.paramMap.pipe(
+      switchMap(param => this.backendService.getUrl(param.get('id'))),
+      tap(url => window.location.href = url),
+      catchError(() => this.router.navigateByUrl('/notfound'))
+    )
+    .subscribe();
   }
 
 }

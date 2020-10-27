@@ -14,7 +14,7 @@ public createUrl(url: string): Observable<string> {
 }
 
 public getUrl(url: string): Observable<string> {
-  return this.http.get('api/url/1', {responseType: 'text'});
+  return this.http.get(`api/url/${url}`, {responseType: 'text'});
 }
 
 }

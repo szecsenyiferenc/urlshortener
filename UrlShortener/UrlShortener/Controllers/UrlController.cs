@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Repository;
+using UrlShortener.Services;
 using UrlShortener.Validators;
 
 namespace UrlShortener.Controllers
@@ -12,24 +13,24 @@ namespace UrlShortener.Controllers
     [ApiController]
     public class UrlController : ControllerBase
     {
-        private readonly IUrlRepository _urlRepository;
+        private readonly IUrlService _urlService;
         private readonly IUrlValidator _urlValidator;
 
-        public UrlController(IUrlRepository urlRepository, IUrlValidator urlValidator)
+        public UrlController(IUrlService urlService, IUrlValidator urlValidator)
         {
-            _urlRepository = urlRepository;
+            _urlService = urlService;
             _urlValidator = urlValidator;
         }
 
-        [HttpGet("{id}", Name = "GetUrl")]
-        public ActionResult<string> Get(string guid)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<string>> Get(string id)
         {
-            if(guid == null)
+            if(id == null)
             {
                 return NotFound();
             }
 
-            var url = _urlRepository.GetUrl(guid);
+            string url = await _urlService.GetUrl(id);
 
             if(url == null)
             {
@@ -40,16 +41,23 @@ namespace UrlShortener.Controllers
         }
 
         [HttpPost]
-        public ActionResult<string> Post([FromBody] string url)
+        public async Task<ActionResult<string>> Post([FromBody] string url)
         {
             if (!_urlValidator.Validate(url))
             {
                 return BadRequest("The given url is invalid.");
             }
 
-            var createdKey = _urlRepository.AddUrl(url);
+            string key = await _urlService.AddUrl(url);
 
-            return CreatedAtRoute("GetUrl", createdKey, createdKey);
+            var createdUrl = CreateUrl(key);
+
+            return Ok(createdUrl);
+        }
+
+        private string CreateUrl(string key)
+        {
+            return $"{Request.Scheme}://{Request.Host}{Request.PathBase}/{key}";
         }
     }
 }

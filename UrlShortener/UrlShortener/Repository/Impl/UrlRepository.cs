@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,19 +8,25 @@ namespace UrlShortener.Repository.Impl
 {
     public class UrlRepository : IUrlRepository
     {
-        public string AddUrl(string url)
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
+        private readonly TimeSpan _expiration = TimeSpan.FromDays(1);
+
+        public UrlRepository(IConnectionMultiplexer connectionMultiplexer)
         {
-            throw new NotImplementedException();
+            _connectionMultiplexer = connectionMultiplexer;
         }
 
-        public string GetUrl(string guid)
+        public async Task AddUrl(string key, string value)
         {
-            throw new NotImplementedException();
+            var db = _connectionMultiplexer.GetDatabase();
+            await db.StringSetAsync(key, value, _expiration);
         }
 
-        public void Save()
+        public async Task<string> GetUrl(string key)
         {
-            throw new NotImplementedException();
+            var db = _connectionMultiplexer.GetDatabase();
+            return await db.StringGetAsync(key);
         }
+
     }
 }

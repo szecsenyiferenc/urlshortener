@@ -7,8 +7,7 @@ namespace UrlShortener.Repository
 {
     public interface IUrlRepository
     {
-        string GetUrl(string guid);
-        string AddUrl(string url);
-        void Save();
+        Task<string> GetUrl(string key);
+        Task AddUrl(string key, string value);
     }
 }
