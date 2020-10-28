@@ -27,7 +27,7 @@ namespace UrlShortener.Services.Impl
 
         public Task<string> GetUrl(string guid)
         {
-            return _urlRepository.GetUrl(guid);
+            return guid != null ? _urlRepository.GetUrl(guid) : null;
         }
     }
 }

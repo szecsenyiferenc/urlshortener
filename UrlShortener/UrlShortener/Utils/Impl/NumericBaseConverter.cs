@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 
 namespace UrlShortener.Utils.Impl
 {
-    public class NumbericBaseConverter : INumbericBaseConverter
+    public class NumericBaseConverter : INumericBaseConverter
     {
         private const string CHARACTER_SET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        private const int MAX_LENGTH = 6;
         private readonly char[] BaseChars;
         private readonly Dictionary<char, int> CharValues;
 
-        public NumbericBaseConverter()
+        public NumericBaseConverter()
         {
             BaseChars = CHARACTER_SET.ToCharArray();
             CharValues = BaseChars
@@ -29,7 +30,7 @@ namespace UrlShortener.Utils.Impl
             if (value <= 0)
             {
                 long newValue = (long)value + Int32.MaxValue - Int32.MinValue;
-                buffer = new char[Math.Max((int)Math.Ceiling(Math.Log(Int32.MaxValue, targetBase)), 1)];
+                buffer = new char[MAX_LENGTH];
 
                 i = buffer.Length;
                 do
@@ -54,7 +55,9 @@ namespace UrlShortener.Utils.Impl
                 while (value > 0);
             }
 
-            return new string(buffer, i, buffer.Length - i);
+            var result = new string(buffer, i, buffer.Length - i);
+
+            return result.PadLeft(MAX_LENGTH, '0');
         }
 
         public int BaseToInt(string number)
@@ -68,7 +71,7 @@ namespace UrlShortener.Utils.Impl
                 x = CharValues[chrs[i]];
                 result += x * (int)Math.Pow(n, m--);
             }
-            return result;
+            return result + 1;
         }
     }
 }

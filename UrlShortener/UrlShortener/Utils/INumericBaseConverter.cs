@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace UrlShortener.Utils
 {
-    public interface INumbericBaseConverter
+    public interface INumericBaseConverter
     {
         public string IntToBase(int value);
 

@@ -7,6 +7,7 @@ namespace UrlShortener.Providers
 {
     public interface IIdProvider
     {
+        void Init(string startId);
         string GetId();
     }
 }

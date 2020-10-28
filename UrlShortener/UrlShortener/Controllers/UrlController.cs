@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using UrlShortener.Repository;
 using UrlShortener.Services;
 using UrlShortener.Validators;
@@ -15,44 +16,57 @@ namespace UrlShortener.Controllers
     {
         private readonly IUrlService _urlService;
         private readonly IUrlValidator _urlValidator;
+        private readonly ILogger<UrlController> _logger;
 
-        public UrlController(IUrlService urlService, IUrlValidator urlValidator)
+        public UrlController(IUrlService urlService, IUrlValidator urlValidator, ILogger<UrlController> logger)
         {
             _urlService = urlService;
             _urlValidator = urlValidator;
+            _logger = logger;
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<string>> Get(string id)
         {
-            if(id == null)
+            try
             {
-                return NotFound();
+                string url = await _urlService.GetUrl(id);
+
+                if (url == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(url);
             }
-
-            string url = await _urlService.GetUrl(id);
-
-            if(url == null)
+            catch (Exception e)
             {
-                return NotFound();
+                _logger.LogError(e.Message, e);
+                return StatusCode(500);
             }
-
-            return Ok(url);
         }
 
         [HttpPost]
         public async Task<ActionResult<string>> Post([FromBody] string url)
         {
-            if (!_urlValidator.Validate(url))
+            try
             {
-                return BadRequest("The given url is invalid.");
+                if (!_urlValidator.Validate(url))
+                {
+                    return BadRequest("The given url is invalid.");
+                }
+
+                string key = await _urlService.AddUrl(url);
+
+                var createdUrl = CreateUrl(key);
+
+                return Ok(createdUrl);
             }
-
-            string key = await _urlService.AddUrl(url);
-
-            var createdUrl = CreateUrl(key);
-
-            return Ok(createdUrl);
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return StatusCode(500);
+            }
         }
 
         private string CreateUrl(string key)

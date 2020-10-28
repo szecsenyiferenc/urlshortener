@@ -9,5 +9,6 @@ namespace UrlShortener.Repository
     {
         Task<string> GetUrl(string key);
         Task AddUrl(string key, string value);
+        string GetLastId();
     }
 }

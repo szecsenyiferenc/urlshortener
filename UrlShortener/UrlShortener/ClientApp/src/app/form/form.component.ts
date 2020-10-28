@@ -1,8 +1,8 @@
 import { BackendService } from './../shared/services/backend.service';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { filter, takeUntil, tap } from 'rxjs/operators';
-import { Subject, Subscription } from 'rxjs';
+import { catchError, filter, takeUntil, tap } from 'rxjs/operators';
+import { of, Subject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form',
@@ -13,6 +13,7 @@ export class FormComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   isReplaced: boolean;
+  errorOccured: boolean;
 
   form = new FormGroup({
     'currentUrl': new FormControl('',
@@ -30,6 +31,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
   constructor(private backendService: BackendService) {
     this.isReplaced = false;
+    this.errorOccured = false;
 
     this.form.controls['currentUrl'].valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -59,6 +61,11 @@ export class FormComponent implements OnInit, OnDestroy {
         this.currentUrl.reset();
         this.currentUrl.setValue(url);
         this.isReplaced = true;
+        this.errorOccured = false;
+      }),
+      catchError(() => {
+        this.errorOccured = true;
+        return of(null);
       })
     ).subscribe();
   }

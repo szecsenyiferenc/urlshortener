@@ -24,7 +24,7 @@ namespace UrlShortener.DependencyInjection
             services.AddSingleton<IUrlRepository, UrlRepository>();
             services.AddSingleton<IIdProvider, IdProvider>();
             services.AddSingleton<IUrlService, UrlService>();
-            services.AddSingleton<INumbericBaseConverter, NumbericBaseConverter>();
+            services.AddSingleton<INumericBaseConverter, NumericBaseConverter>();
         }
     }
 }
